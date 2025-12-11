@@ -73,29 +73,12 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
     }
 
-    /* Result Card */
-    .result-card {
-        background: #f8f9fa !important;
-        border: 2px solid #e0e0e0;
-        border-radius: 15px;
-        padding: 20px;
-        margin-top: 20px;
-        text-align: center;
-        color: #1a1a1a !important;
-    }
-
-    .result-card h3 {
-        color: #1a1a1a !important;
-    }
-
-    .result-card p, .result-card div {
-        color: #333333 !important;
-    }
 
     /* Markdown Content */
     .stMarkdown {
         color: #1a1a1a !important;
     }
+
 
     /* Button */
     .stButton>button {
@@ -302,7 +285,7 @@ with col_result:
         # ---------------------------------------------------------
         # TEXT INSIGHTS
         # ---------------------------------------------------------
-        st.markdown("<div class='result-card'>", unsafe_allow_html=True)
+        st.markdown("---")  # Divider line
         
         if prob > 0.6:
             st.markdown(f"### ⚠️ High Risk Customer")
@@ -317,8 +300,7 @@ with col_result:
         else:
             st.markdown(f"### ✅ Loyal Customer")
             st.markdown(f"Low risk of churn (**{prob:.1%}**). No immediate action needed.")
-            
-        st.markdown("</div>", unsafe_allow_html=True)
+
 
     else:
         # Placeholder State
