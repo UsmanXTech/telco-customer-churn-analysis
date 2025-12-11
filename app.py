@@ -1,212 +1,104 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
 import joblib
+import plotly.graph_objects as go
 import os
 
-# =========================================================================
-# 1. PAGE CONFIGURATION
-# =========================================================================
-st.set_page_config(
-    page_title="Churn Predictor",
-    page_icon="🔮",
-    layout="wide"
-)
+# ---------------------------------------------------------------
+# PAGE CONFIG
+# ---------------------------------------------------------------
+st.set_page_config(page_title="Churn Predictor", page_icon="📡", layout="wide")
 
-# =========================================================================
-# 2. MODERN DARK THEME CSS
-# =========================================================================
+# ---------------------------------------------------------------
+# MINIMAL ELEGANT THEME
+# ---------------------------------------------------------------
 st.markdown("""
     <style>
-    /* Global White Background */
-    .stApp {
-        background-color: #ffffff !important;
-        background-image: none !important;
-        color: #1a1a1a !important;
-    }
-
-    /* All Text Elements - Dark Text */
-    p, div, span, label, li {
-        color: #1a1a1a !important;
-    }
-
-    /* Markdown paragraphs */
-    .stMarkdown p {
-        color: #333333 !important;
-    }
-
-    /* Info/Warning/Success boxes */
-    .stAlert {
-        background-color: #e3f2fd !important;
-        color: #1a1a1a !important;
-        border: 1px solid #2196f3;
-    }
-
-    .stAlert p, .stAlert div {
-        color: #1a1a1a !important;
-    }
-
-    /* Input Fields */
-    .stSelectbox div[data-baseweb="select"] > div, 
-    .stNumberInput div[data-baseweb="input"] > div {
-        background-color: #f5f5f5 !important;
-        color: #1a1a1a !important;
-        border: 1px solid #d0d0d0;
-        border-radius: 8px;
-    }
-
-    /* Dropdown options */
-    [data-baseweb="popover"] {
-        background-color: #ffffff !important;
-    }
-
-    /* Headers */
-    h1, h2, h3, h4, h5, h6 {
-        color: #1a1a1a !important;
-        font-family: 'Inter', sans-serif;
-    }
-
-    h1 {
-        background: linear-gradient(90deg, #2196f3 0%, #00bcd4 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-
-    /* Markdown Content */
-    .stMarkdown {
-        color: #1a1a1a !important;
-    }
-
-
-    /* Button */
-    .stButton>button {
-        background: linear-gradient(90deg, #2196f3 0%, #00bcd4 100%);
-        color: #ffffff !important;
-        font-weight: bold;
-        border: none;
-        border-radius: 10px;
-        height: 50px;
-        width: 100%;
-        margin-top: 20px;
-        transition: transform 0.2s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .stButton>button:hover {
-        transform: scale(1.02);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-
-    /* Radio and Checkbox */
-    .stRadio label, .stCheckbox label {
-        color: #1a1a1a !important;
-    }
-
-    .stRadio > label, .stCheckbox > label {
-        color: #1a1a1a !important;
-    }
-
-    /* Expander */
-    .streamlit-expanderHeader {
-        background-color: #f5f5f5 !important;
-        color: #1a1a1a !important;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-    }
-
-    .streamlit-expanderHeader p, 
-    .streamlit-expanderHeader div,
-    .streamlit-expanderHeader svg {
-        color: #1a1a1a !important;
-        fill: #1a1a1a !important;
-    }
-
-    /* Slider labels */
-    .stSlider label {
-        color: #1a1a1a !important;
-    }
-
-    /* Number input labels */
-    .stNumberInput label {
-        color: #1a1a1a !important;
-    }
-
-    /* Select box labels */
-    .stSelectbox label {
-        color: #1a1a1a !important;
-    }
-
-    /* Slider track */
-    .stSlider [data-baseweb="slider"] {
-        background-color: #e0e0e0;
-    }
+        .main-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: -10px;
+            background: linear-gradient(90deg, #0066ff, #00e5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+            color: #333;
+        }
+        .risk-badge {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            display: inline-block;
+        }
+        .low { background:#d1ffd6; color:#0f7b28; }
+        .med { background:#fff2cc; color:#a67c00; }
+        .high { background:#ffd6d6; color:#a60000; }
     </style>
 """, unsafe_allow_html=True)
 
-
-# =========================================================================
-# 3. LOAD MODEL
-# =========================================================================
+# ---------------------------------------------------------------
+# LOAD MODEL
+# ---------------------------------------------------------------
 @st.cache_resource
 def load_model():
-    paths = ['notebooks/churn_model.pkl', 'churn_model.pkl']
-    for path in paths:
+    for path in ["churn_model.pkl", "notebooks/churn_model.pkl"]:
         if os.path.exists(path):
             return joblib.load(path)
     return None
 
 model = load_model()
 
-# =========================================================================
-# 4. MAIN LAYOUT
-# =========================================================================
-st.title("🤖 Telecom Churn Predictor")
-st.markdown("Enter customer details below to estimate the risk of churn.")
+# ---------------------------------------------------------------
+# TITLE
+# ---------------------------------------------------------------
+st.markdown("<h1 class='main-title'>Telecom Churn Predictor</h1>", unsafe_allow_html=True)
+st.write("Provide customer details to estimate churn probability.")
 
-# Create two columns: Inputs on Left, Results on Right
-col_inputs, col_result = st.columns([1.2, 1], gap="large")
+# ---------------------------------------------------------------
+# 2-COLUMN UI LAYOUT
+# ---------------------------------------------------------------
+left, right = st.columns([1.2, 1])
 
-with col_inputs:
-    st.markdown("### 📋 Customer Profile")
-    
-    with st.expander("👤 Demographics", expanded=True):
-        c1, c2 = st.columns(2)
-        gender = c1.radio("Gender", ["Male", "Female"], horizontal=True)
-        senior = c2.checkbox("Senior Citizen")
-        partner = c1.selectbox("Partner", ["Yes", "No"])
-        dependents = c2.selectbox("Dependents", ["Yes", "No"])
-        
-    with st.expander("📞 Services & Tenure", expanded=True):
-        tenure = st.slider("Tenure (Months)", 0, 72, 12)
-        internet = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-        
-        c1, c2 = st.columns(2)
-        # Simplified service inputs for clean UI
-        online_security = c1.checkbox("Online Security")
-        tech_support = c2.checkbox("Tech Support")
-        
-    with st.expander("💳 Contract & Billing", expanded=True):
-        contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
-        payment = st.selectbox("Payment Method", ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"])
-        paperless = st.checkbox("Paperless Billing", value=True)
-        
-        c1, c2 = st.columns(2)
-        monthly = c1.number_input("Monthly Charges ($)", 0.0, 150.0, 70.0, step=0.5)
-        # Auto-calculate default Total Charges based on tenure
-        total = c2.number_input("Total Charges ($)", 0.0, 9000.0, monthly * tenure, step=10.0)
+# ========================= LEFT INPUT PANE =========================
+with left:
+    st.markdown("<div class='section-header'>Customer Profile</div>", unsafe_allow_html=True)
 
-    # Prepare Input Dictionary (Mapping UI inputs to Model features)
-    # Note: We hardcode 'No' for services not explicitly asked to keep UI simple, 
-    # or you can add more checkboxes if your model requires them strictly.
+    gender = st.radio("Gender", ["Male", "Female"], horizontal=True)
+    senior = st.checkbox("Senior Citizen")
+    partner = st.selectbox("Partner", ["Yes", "No"])
+    dependents = st.selectbox("Dependents", ["Yes", "No"])
+
+    st.markdown("<div class='section-header'>Services & Usage</div>", unsafe_allow_html=True)
+    tenure = st.slider("Tenure (Months)", 0, 72, 12)
+    internet = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+    colA, colB = st.columns(2)
+    online_security = colA.checkbox("Online Security")
+    tech_support = colB.checkbox("Tech Support")
+
+    st.markdown("<div class='section-header'>Billing</div>", unsafe_allow_html=True)
+    contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
+    payment = st.selectbox("Payment Method", 
+        ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"])
+    paperless = st.checkbox("Paperless Billing", value=True)
+
+    col1, col2 = st.columns(2)
+    monthly = col1.number_input("Monthly Charges ($)", 0.0, 150.0, 70.0)
+    total = col2.number_input("Total Charges ($)", 0.0, 9000.0, monthly * tenure)
+
     input_data = {
         'gender': gender,
-        'SeniorCitizen': str(1 if senior else 0),  # Convert to string to match model training
+        'SeniorCitizen': str(int(senior)),
         'Partner': partner,
         'Dependents': dependents,
         'tenure': tenure,
-        'PhoneService': "Yes", 
-        'MultipleLines': "No", 
+        'PhoneService': "Yes",
+        'MultipleLines': "No",
         'InternetService': internet,
         'OnlineSecurity': "Yes" if online_security else "No",
         'OnlineBackup': "No",
@@ -221,90 +113,50 @@ with col_inputs:
         'TotalCharges': total
     }
 
-    analyze_btn = st.button("🚀 Analyze Churn Risk")
+    run = st.button("Predict Churn")
 
-# =========================================================================
-# 5. PREDICTION LOGIC & VISUALIZATION
-# =========================================================================
-with col_result:
-    if analyze_btn:
-        st.markdown("### 📊 Analysis Result")
-        
-        # ---------------------------------------------------------
-        # PREDICTION (Use Model or Fallback Mock)
-        # ---------------------------------------------------------
+# ========================= RIGHT OUTPUT PANE =========================
+with right:
+    if run:
+        df_input = pd.DataFrame([input_data])
+
         if model:
             try:
-                # Convert dict to DataFrame
-                df_input = pd.DataFrame([input_data])
                 prob = model.predict_proba(df_input)[0][1]
-            except Exception as e:
-                st.error(f"Model Error: {e}")
-                prob = 0.5 # Fallback
+            except:
+                prob = 0.50
         else:
-            # MOCK LOGIC (If no model file found)
-            # Logic: Monthly contract + High Price + Fiber = High Risk
             prob = 0.20
             if contract == "Month-to-month": prob += 0.30
             if internet == "Fiber optic": prob += 0.15
             if payment == "Electronic check": prob += 0.10
             if tenure < 6: prob += 0.10
             prob = min(prob, 0.99)
-        
-        # ---------------------------------------------------------
-        # GAUGE CHART (Plotly)
-        # ---------------------------------------------------------
-        fig = go.Figure(go.Indicator(
-            mode = "gauge+number",
-            value = prob * 100,
-            domain = {'x': [0, 1], 'y': [0, 1]},
-            title = {'text': "Churn Probability", 'font': {'size': 24, 'color': 'white'}},
-            number = {'suffix': "%", 'font': {'color': 'white', 'size': 40}},
-            gauge = {
-                'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': "white"},
-                'bar': {'color': "rgba(0,0,0,0)"}, # Transparent bar
-                'bgcolor': "rgba(0,0,0,0)",
-                'borderwidth': 2,
-                'bordercolor': "#333",
-                'steps': [
-                    {'range': [0, 40], 'color': "#00f2fe"},  # Safe (Cyan)
-                    {'range': [40, 70], 'color': "#4facfe"},  # Warning (Blue)
-                    {'range': [70, 100], 'color': "#ff0080"}  # Danger (Pink)
-                ],
-                'threshold': {
-                    'line': {'color': "white", 'width': 5},
-                    'thickness': 0.75,
-                    'value': prob * 100
-                }
-            }
-        ))
-        
-        fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", font={'color': "white", 'family': "Inter"}, height=300)
-        st.plotly_chart(fig, use_container_width=True)
-        
-        # ---------------------------------------------------------
-        # TEXT INSIGHTS
-        # ---------------------------------------------------------
-        st.markdown("---")  # Divider line
-        
-        if prob > 0.6:
-            st.markdown(f"### ⚠️ High Risk Customer")
-            st.markdown(f"This customer has a **{prob:.1%}** probability of leaving.")
-            st.markdown("---")
-            st.markdown("**Recommended Actions:**")
-            st.markdown("👉 Offer a 12-month contract discount.")
-            st.markdown("👉 Waive current month's support fees.")
-        elif prob > 0.4:
-            st.markdown(f"### ⚖️ Moderate Risk")
-            st.markdown(f"Monitor usage. Probability: **{prob:.1%}**")
-        else:
-            st.markdown(f"### ✅ Loyal Customer")
-            st.markdown(f"Low risk of churn (**{prob:.1%}**). No immediate action needed.")
 
+        st.markdown("<div class='section-header'>Churn Prediction</div>", unsafe_allow_html=True)
+        st.metric("Churn Probability", f"{prob*100:.1f}%")
+
+        # Risk Badge
+        if prob > 0.6:
+            badge = "<div class='risk-badge high'>High Risk</div>"
+        elif prob > 0.4:
+            badge = "<div class='risk-badge med'>Moderate Risk</div>"
+        else:
+            badge = "<div class='risk-badge low'>Low Risk</div>"
+
+        st.markdown(badge, unsafe_allow_html=True)
+
+        # Mini gauge style progress bar
+        st.progress(float(prob))
+
+        # Recommendations
+        if prob > 0.6:
+            st.write("• Offer contract renewal discounts.")
+            st.write("• Improve service quality and support.")
+        elif prob > 0.4:
+            st.write("• Monitor customer usage patterns.")
+        else:
+            st.write("• Customer is stable, no immediate action.")
 
     else:
-        # Placeholder State
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        st.info("👈 Fill in the customer details on the left and click **'Analyze Churn Risk'**.")
-        # Fixed Image Line (No style argument)
-        st.image("https://cdn-icons-png.flaticon.com/512/3261/3261308.png", width=150)
+        st.info("Fill the form and click **Predict Churn**.")
